@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   # Health & root routes
   # ----------------------------
   get "up" => "rails/health#show", as: :rails_health_check
-  root to: "home#index"
+  # root to: "home#index"
 
   # ----------------------------
   # Signup API with OTP
@@ -20,4 +20,9 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  post "/chat", to: "chat#create"
+  get  "/chat", to: "chat#index"
+
+
 end

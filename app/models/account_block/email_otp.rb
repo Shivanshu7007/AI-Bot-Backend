@@ -5,11 +5,16 @@ module AccountBlock
     # ----------------------------
     # Validations
     # ----------------------------
-    validates :email, presence: true, format: { 
-      with: /\A[\w+\-.]+@(.*\.)?(edu\.in|ac\.in)\z/i, 
-      message: "must be a student email (edu.in or ac.in)" 
+    # validates :email, presence: true, format: { 
+    #   with: /\A[\w+\-.]+@(.*\.)?(edu\.in|ac\.in)\z/i, 
+    #   message: "must be a student email (edu.in or ac.in)" 
+    # }
+    validates :email, presence: true, format: {
+      with: URI::MailTo::EMAIL_REGEXP,
+      message: "must be a valid email address"
     }
-    validates :otp, presence: true, length: { is: 6 }
+
+    validates :otp, presence: true, length: { is: 6 } 
 
     # ----------------------------
     # Callbacks
@@ -25,7 +30,7 @@ module AccountBlock
     end
 
     def set_expiry
-      self.expires_at = 10.minutes.from_now
+      self.expires_at = 5.minutes.from_now
       self.verified = false
     end
 
