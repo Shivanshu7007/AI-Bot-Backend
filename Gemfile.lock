@@ -126,6 +126,9 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    docx (0.10.0)
+      nokogiri (~> 1.13, >= 1.13.0)
+      rubyzip (>= 2.0, < 4)
     dotenv (3.2.0)
     dotenv-rails (3.2.0)
       dotenv (= 3.2.0)
@@ -488,6 +491,7 @@ DEPENDENCIES
   capybara
   debug
   devise
+  docx
   dotenv-rails
   importmap-rails
   jbuilder

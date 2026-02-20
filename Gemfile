@@ -72,5 +72,6 @@ gem 'sidekiq'
 gem 'pdf-reader'
 gem 'rqrcode'
 gem 'rqrcode_png'
+gem 'docx'
 
 

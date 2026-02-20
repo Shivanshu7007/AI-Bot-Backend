@@ -1,9 +1,10 @@
 ActiveAdmin.register Product do
-  permit_params :name, documents: []
+  config.filters = false
+  permit_params :name, :description, :image, documents: []
 
-  # ===============================
-  # QR DOWNLOAD MEMBER ACTION
-  # ===============================
+  # ==================================================
+  # 🔹 QR DOWNLOAD MEMBER ACTION
+  # ==================================================
   member_action :qr, method: :get do
     product = Product.find(params[:id])
 
@@ -27,48 +28,59 @@ ActiveAdmin.register Product do
               filename: "product_#{product.id}_qr.png"
   end
 
-  # ===============================
-  # QR BUTTON ON SHOW PAGE
-  # ===============================
+  # ==================================================
+  # 🔹 QR BUTTON ON SHOW PAGE
+  # ==================================================
   action_item :download_qr, only: :show do
     link_to "Download QR Code",
             qr_admin_product_path(resource)
   end
 
-  # ===============================
-  # INDEX
-  # ===============================
+  # ==================================================
+  # 🔹 INDEX PAGE
+  # ==================================================
   index do
     selectable_column
     id_column
     column :name
-    column "Documents" do |product|
-      product.documents.map do |doc|
-        link_to doc.filename, url_for(doc)
-      end.join(", ").html_safe
+    column :description
+
+    column "Image" do |product|
+      if product.image.attached?
+        image_tag url_for(product.image), size: "60x60"
+      end
     end
+
     column :created_at
-    column :updated_at
     actions
   end
 
-  # ===============================
-  # FORM
-  # ===============================
+  # ==================================================
+  # 🔹 FORM
+  # ==================================================
   form do |f|
     f.inputs "Product Details" do
       f.input :name
+      f.input :description, as: :text, input_html: { rows: 5 }
+      f.input :image, as: :file
       f.input :documents, as: :file, input_html: { multiple: true }
     end
     f.actions
   end
 
-  # ===============================
-  # SHOW PAGE
-  # ===============================
+  # ==================================================
+  # 🔹 SHOW PAGE
+  # ==================================================
   show do
     attributes_table do
       row :name
+      row :description
+
+      row :image do |product|
+        if product.image.attached?
+          image_tag url_for(product.image), size: "150x150"
+        end
+      end
 
       row :documents do |product|
         product.documents.map do |doc|

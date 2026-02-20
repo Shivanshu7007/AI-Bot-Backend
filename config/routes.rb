@@ -3,26 +3,21 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
   devise_for :users
 
-  # ----------------------------
-  # Health & root routes
-  # ----------------------------
   get "up" => "rails/health#show", as: :rails_health_check
-  # root to: "home#index"
 
-  # ----------------------------
-  # Signup API with OTP
-  # ----------------------------
-  namespace :account_block do
-    resources :accounts, only: [] do
-      collection do
-        post :send_otp     
-        post :verify_otp   
-      end
-    end
+  direct :rails_blob do |blob|
+    route_for(:rails_blob, blob)
   end
 
   post "/chat", to: "chat#create"
-  get  "/chat", to: "chat#index"
 
+  namespace :api do
+    resources :products, only: [:index]
+  end
 
+  get "/landingpage", to: "react#index"
+
+  get "*path", to: "react#index", constraints: lambda { |req|
+    req.format.html? && !req.path.start_with?('/rails/active_storage')
+  }
 end

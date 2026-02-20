@@ -1,5 +1,6 @@
 class Product < ApplicationRecord
   has_many_attached :documents
+   has_one_attached :image
 
   after_commit :enqueue_ingestion, on: [:create]
   after_destroy_commit :enqueue_collection_deletion
@@ -27,11 +28,14 @@ class Product < ApplicationRecord
   # ---------------------------
   # RANSACK SAFE
   # ---------------------------
+# ---------------------------
+# RANSACK SAFE
+# ---------------------------
   def self.ransackable_attributes(_auth_object = nil)
-    %w[id name created_at updated_at]
+    %w[id name description created_at updated_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[documents_attachments documents_blobs]
+    []
   end
 end
