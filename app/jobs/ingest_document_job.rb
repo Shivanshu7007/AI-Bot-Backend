@@ -96,11 +96,12 @@ class IngestDocumentJob < ApplicationJob
 
   def send_to_python(product_id, text)
 
-    python_url = ENV.fetch("PYTHON_API_URL", "http://localhost:8000")
+    python_url = ENV.fetch("PYTHON_API_URL")
 
     uri = URI.parse("#{python_url}/ingest")
 
     http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = uri.scheme == "https"
     http.open_timeout = 10
     http.read_timeout = 120
 
