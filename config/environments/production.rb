@@ -5,7 +5,7 @@ Rails.application.configure do
   config.eager_load = true
   config.consider_all_requests_local = false
 
-  # Do not serve static files (Render handles it)
+  # Do not serve static files
   config.public_file_server.enabled = false
 
   # Logging
@@ -16,19 +16,19 @@ Rails.application.configure do
 
   config.active_support.report_deprecations = false
 
-  # ActiveStorage (temporary local — later move to S3)
+  # ActiveStorage
   config.active_storage.service = :local
 
-  # Simple cache
+  # Cache + Jobs (simple mode)
   config.cache_store = :memory_store
-
-  # 🔥 Use async instead of SolidQueue (NO worker needed)
   config.active_job.queue_adapter = :async
+
+  # 🔥 Disable ActionCable DB adapter
+  config.action_cable.adapter = :async
 
   config.i18n.fallbacks = true
   config.active_record.dump_schema_after_migration = false
   config.active_record.attributes_for_inspect = [:id]
 
-  # Allow Render domain
   config.hosts << "ai-bot-backend-u8yg.onrender.com"
 end
