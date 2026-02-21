@@ -5,10 +5,8 @@ Rails.application.configure do
   config.eager_load = true
   config.consider_all_requests_local = false
 
-  # Do not serve static files
   config.public_file_server.enabled = false
 
-  # Logging
   config.log_tags = [:request_id]
   config.logger = ActiveSupport::TaggedLogging.logger(STDOUT)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
@@ -19,12 +17,12 @@ Rails.application.configure do
   # ActiveStorage
   config.active_storage.service = :local
 
-  # Cache + Jobs (simple mode)
+  # Simple cache + async jobs
   config.cache_store = :memory_store
   config.active_job.queue_adapter = :async
 
-  # 🔥 Disable ActionCable DB adapter
-  config.action_cable.adapter = :async
+  # 🔥 Disable ActionCable completely
+  config.action_cable.mount_path = nil
 
   config.i18n.fallbacks = true
   config.active_record.dump_schema_after_migration = false
