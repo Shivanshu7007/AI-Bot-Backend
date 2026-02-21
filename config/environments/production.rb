@@ -19,7 +19,7 @@ Rails.application.configure do
 
   # Cache + Jobs
   config.cache_store = :memory_store
-  config.active_job.queue_adapter = :async
+  config.active_job.queue_adapter = :inline
 
   # Disable ActionCable mount
   config.action_cable.mount_path = nil
