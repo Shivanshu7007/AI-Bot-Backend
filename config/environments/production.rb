@@ -17,16 +17,17 @@ Rails.application.configure do
   # ActiveStorage
   config.active_storage.service = :local
 
-  # Simple cache + async jobs
+  # Cache + Jobs
   config.cache_store = :memory_store
   config.active_job.queue_adapter = :async
 
-  # 🔥 Disable ActionCable completely
+  # Disable ActionCable mount
   config.action_cable.mount_path = nil
 
   config.i18n.fallbacks = true
   config.active_record.dump_schema_after_migration = false
   config.active_record.attributes_for_inspect = [:id]
 
-  config.hosts << "ai-bot-backend-u8yg.onrender.com"
+  # 🔥 Allow ALL Render hosts
+  config.hosts.clear
 end
