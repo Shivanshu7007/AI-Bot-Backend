@@ -15,7 +15,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # ActiveStorage
-  config.active_storage.service = :cloudinary
+  config.active_storage.service = :local
 
   # Cache + Jobs
   config.cache_store = :memory_store
