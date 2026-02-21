@@ -72,4 +72,4 @@ gem 'rqrcode'
 gem 'rqrcode_png'
 gem 'docx'
 gem "rack-cors"
-
+gem "cloudinary"
