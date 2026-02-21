@@ -7,26 +7,26 @@ Rails.application.configure do
   # Eager load code on boot.
   config.eager_load = true
 
-  # Full error reports are disabled.
+  # Disable full error reports.
   config.consider_all_requests_local = false
 
-  # Caching for performance
+  # Cache for performance
   config.action_controller.perform_caching = true
 
-  # ⭐ Serve React static files
+  # ⭐ Serve React Build (public folder)
   config.public_file_server.enabled = true
-  config.assets.compile = true
+  config.assets.compile = false
   config.assets.digest = true
 
-  # Cache headers
+  # Cache headers for static files
   config.public_file_server.headers = {
     "Cache-Control" => "public, max-age=#{1.year.to_i}"
   }
 
-  # Active Storage
+  # ActiveStorage
   config.active_storage.service = :local
 
-  # SSL (Render auto-terminates SSL, but ok)
+  # SSL
   config.assume_ssl = true
   config.force_ssl = true
 
@@ -35,6 +35,8 @@ Rails.application.configure do
   config.logger = ActiveSupport::TaggedLogging.logger(STDOUT)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
   config.silence_healthcheck_path = "/up"
+
+  # Deprecations
   config.active_support.report_deprecations = false
 
   # Cache + Queue
@@ -51,10 +53,8 @@ Rails.application.configure do
   # I18n fallback
   config.i18n.fallbacks = true
 
-  # Schema dump
+  # DB schema
   config.active_record.dump_schema_after_migration = false
-
-  # Only show ID in logs
   config.active_record.attributes_for_inspect = [:id]
 
   # Allow Render host

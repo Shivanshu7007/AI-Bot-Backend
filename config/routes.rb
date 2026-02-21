@@ -1,25 +1,25 @@
 Rails.application.routes.draw do
-  root "react#index"   # ✅ homepage fix
+  # React frontend as root
+  root "react#index"
 
+  # Devise + ActiveAdmin
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
   devise_for :users
 
+  # Healthcheck
   get "up" => "rails/health#show", as: :rails_health_check
 
-  direct :rails_blob do |blob|
-    route_for(:rails_blob, blob)
-  end
-
+  # Chat API
   post "/chat", to: "chat#create"
 
+  # API namespace
   namespace :api do
     resources :products, only: [:index]
   end
 
-  get "/landingpage", to: "react#index"
-
-  get "*path", to: "react#index", constraints: lambda { |req|
-    req.format.html? && !req.path.start_with?('/rails/active_storage')
-  }
+  # React fallback for frontend routes
+  get "*path", to: "react#index", constraints: ->(req) do
+    req.format.html? && !req.path.start_with?("/rails/active_storage")
+  end
 end
