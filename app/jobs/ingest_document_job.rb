@@ -17,18 +17,26 @@ class IngestDocumentJob < ApplicationJob
     blob = ActiveStorage::Blob.find_by(id: blob_id)
     return unless blob
 
+    Rails.logger.info "🔄 Starting ingest for product #{product_id}"
+
     file_content = blob.download
     filename     = blob.filename.to_s.downcase
 
     text = extract_text(file_content, filename)
-    return if text.blank?
+
+    if text.blank?
+      Rails.logger.warn "⚠️ No text extracted from #{filename}"
+      return
+    end
 
     send_to_python(product.id, text)
 
     Rails.logger.info "✅ Ingest success for product #{product.id}"
 
   rescue => e
-    Rails.logger.error "IngestDocumentJob failed: #{e.message}"
+    Rails.logger.error "❌ IngestDocumentJob failed: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    raise e
   end
 
   # ====================================================
@@ -36,7 +44,6 @@ class IngestDocumentJob < ApplicationJob
   # ====================================================
 
   def extract_text(raw, filename)
-
     case
     when filename.end_with?(".pdf")
       parse_pdf(raw)
@@ -83,7 +90,7 @@ class IngestDocumentJob < ApplicationJob
   # ---------------- YAML ----------------
 
   def parse_yaml(raw)
-    yaml = YAML.safe_load(raw)
+    yaml = YAML.safe_load(raw, permitted_classes: [Date, Time], aliases: true)
     yaml.to_s
   rescue => e
     Rails.logger.error "YAML parsing failed: #{e.message}"
@@ -95,8 +102,8 @@ class IngestDocumentJob < ApplicationJob
   # ====================================================
 
   def send_to_python(product_id, text)
-
     python_url = ENV.fetch("PYTHON_API_URL")
+    api_key    = ENV.fetch("SERVICE_API_KEY")
 
     uri = URI.parse("#{python_url}/ingest")
 
@@ -107,7 +114,7 @@ class IngestDocumentJob < ApplicationJob
 
     request = Net::HTTP::Post.new(uri.request_uri, {
       "Content-Type" => "application/json",
-      "x-api-key" => ENV["SERVICE_API_KEY"]
+      "x-api-key"    => api_key
     })
 
     request.body = {
@@ -118,7 +125,8 @@ class IngestDocumentJob < ApplicationJob
     response = http.request(request)
 
     unless response.code.to_i == 200
-      raise "Python ingest failed: #{response.body}"
+      Rails.logger.error "FastAPI error: #{response.body}"
+      raise "Python ingest failed"
     end
   end
 end
