@@ -5,6 +5,7 @@ require "pdf-reader"
 require "docx"
 require "yaml"
 require "stringio"
+require "open-uri"
 
 class IngestDocumentJob < ApplicationJob
   queue_as :default
@@ -19,8 +20,11 @@ class IngestDocumentJob < ApplicationJob
 
     Rails.logger.info "🔄 Starting ingest for product #{product_id}"
 
-    file_content = blob.download
+    # ✅ IMPORTANT FIX FOR CLOUDINARY
+    file_content = URI.open(blob.url).read
     filename     = blob.filename.to_s.downcase
+
+    Rails.logger.info "📦 File size: #{file_content.bytesize}"
 
     text = extract_text(file_content, filename)
 
@@ -70,8 +74,21 @@ class IngestDocumentJob < ApplicationJob
   # ---------------- PDF ----------------
 
   def parse_pdf(raw)
-    reader = PDF::Reader.new(StringIO.new(raw))
-    reader.pages.map(&:text).join("\n")
+    io = StringIO.new(raw)
+    reader = PDF::Reader.new(io)
+
+    text = reader.pages.map(&:text).join("\n")
+
+    if text.blank?
+      Rails.logger.warn "⚠️ PDF has no extractable text (possibly scanned PDF)"
+    end
+
+    text
+
+  rescue PDF::Reader::MalformedPDFError => e
+    Rails.logger.error "Malformed PDF: #{e.message}"
+    ""
+
   rescue => e
     Rails.logger.error "PDF parsing failed: #{e.message}"
     ""
@@ -82,6 +99,7 @@ class IngestDocumentJob < ApplicationJob
   def parse_docx(raw)
     doc = Docx::Document.open(StringIO.new(raw))
     doc.paragraphs.map(&:text).join("\n")
+
   rescue => e
     Rails.logger.error "DOCX parsing failed: #{e.message}"
     ""
@@ -92,6 +110,7 @@ class IngestDocumentJob < ApplicationJob
   def parse_yaml(raw)
     yaml = YAML.safe_load(raw, permitted_classes: [Date, Time], aliases: true)
     yaml.to_s
+
   rescue => e
     Rails.logger.error "YAML parsing failed: #{e.message}"
     ""
