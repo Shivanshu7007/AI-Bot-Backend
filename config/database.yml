@@ -20,34 +20,5 @@ test:
   port: 5432
 
 production:
-  primary:
-    <<: *default
-    database: <%= ENV["DB_NAME"] %>
-    username: <%= ENV["DB_USERNAME"] %>
-    password: <%= ENV["DB_PASSWORD"] %>
-    host: <%= ENV["DB_HOST"] %>
-    port: 5432
-
-  cache:
-    <<: *default
-    database: <%= ENV["DB_NAME"] %>
-    username: <%= ENV["DB_USERNAME"] %>
-    password: <%= ENV["DB_PASSWORD"] %>
-    host: <%= ENV["DB_HOST"] %>
-    port: 5432
-
-  queue:
-    <<: *default
-    database: <%= ENV["DB_NAME"] %>
-    username: <%= ENV["DB_USERNAME"] %>
-    password: <%= ENV["DB_PASSWORD"] %>
-    host: <%= ENV["DB_HOST"] %>
-    port: 5432
-
-  cable:
-    <<: *default
-    database: <%= ENV["DB_NAME"] %>
-    username: <%= ENV["DB_USERNAME"] %>
-    password: <%= ENV["DB_PASSWORD"] %>
-    host: <%= ENV["DB_HOST"] %>
-    port: 5432
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
