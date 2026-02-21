@@ -11,8 +11,14 @@ ActiveAdmin.register Product do
     require 'rqrcode'
     require 'rqrcode_png'
 
+    # Use ENV variable or fallback
+    frontend_url = ENV.fetch(
+      "FRONTEND_URL",
+      "https://cellogen-chatbot.vercel.app"
+    )
+
     qr = RQRCode::QRCode.new(
-      "https://yourdomain.com/chat?product_id=#{product.id}"
+      "#{frontend_url}/?product_id=#{product.id}"
     )
 
     png = qr.as_png(
