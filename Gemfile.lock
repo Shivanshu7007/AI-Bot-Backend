@@ -170,6 +170,9 @@ GEM
     hashery (2.1.2)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
+    image_processing (1.14.0)
+      mini_magick (>= 4.9.5, < 6)
+      ruby-vips (>= 2.0.17, < 3)
     importmap-rails (2.2.2)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -228,6 +231,8 @@ GEM
       net-smtp
     marcel (1.1.0)
     matrix (0.4.3)
+    mini_magick (5.3.1)
+      logger
     mini_mime (1.1.5)
     minitest (5.25.5)
     msgpack (1.8.0)
@@ -388,6 +393,9 @@ GEM
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
+    ruby-vips (2.3.0)
+      ffi (~> 1.12)
+      logger
     ruby2_keywords (0.0.5)
     rubyzip (3.1.1)
     sassc (2.4.0)
@@ -488,6 +496,7 @@ DEPENDENCIES
   devise
   docx
   dotenv-rails
+  image_processing
   importmap-rails
   jbuilder
   kamal
@@ -499,6 +508,7 @@ DEPENDENCIES
   rqrcode
   rqrcode_png
   rubocop-rails-omakase
+  ruby-vips
   sassc-rails
   selenium-webdriver
   sidekiq

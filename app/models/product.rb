@@ -4,6 +4,7 @@ class Product < ApplicationRecord
 
   after_commit :enqueue_ingestion, on: [:create]
   after_destroy_commit :enqueue_collection_deletion
+  validate :validate_document_types
 
   private
 
@@ -25,5 +26,13 @@ class Product < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     []
+  end
+
+  def validate_document_types
+    documents.each do |doc|
+      unless doc.filename.to_s.downcase.match?(/\.(pdf|docx|txt|yaml|yml|json)\z/)
+        errors.add(:documents, "Only PDF, DOCX, TXT, YAML, JSON files are allowed.")
+      end
+    end
   end
 end

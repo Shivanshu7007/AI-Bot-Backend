@@ -41,6 +41,10 @@ class IngestDocumentJob < ApplicationJob
     raise e
   end
 
+  # ==========================
+  # TEXT EXTRACTION
+  # ==========================
+
   def extract_text(raw, filename)
     case
     when filename.end_with?(".pdf")
@@ -51,13 +55,34 @@ class IngestDocumentJob < ApplicationJob
       doc = Docx::Document.open(StringIO.new(raw))
       doc.paragraphs.map(&:text).join("\n")
 
+    when filename.end_with?(".txt")
+      raw.force_encoding("UTF-8")
+
+    when filename.end_with?(".yaml", ".yml")
+      parsed = YAML.safe_load(raw, permitted_classes: [Date, Time], aliases: true)
+      parsed.to_s
+
+    when filename.end_with?(".json")
+      parsed = JSON.parse(raw)
+      parsed.to_s
+
+    when filename.end_with?(".doc")
+      Rails.logger.warn "❌ .doc format not supported. Please upload .docx"
+      ""
+
     else
+      Rails.logger.warn "Unsupported file format: #{filename}"
       ""
     end
+
   rescue => e
     Rails.logger.error "Parsing error: #{e.message}"
     ""
   end
+
+  # ==========================
+  # SEND TO PYTHON
+  # ==========================
 
   def send_to_python(product_id, text)
     python_url = ENV.fetch("PYTHON_API_URL")
