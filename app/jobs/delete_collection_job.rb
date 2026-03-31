@@ -3,31 +3,38 @@ require "uri"
 
 class DeleteCollectionJob < ApplicationJob
   queue_as :default
-  retry_on StandardError, wait: 5.seconds, attempts: 5
+  retry_on StandardError, wait: 5.seconds, attempts: 3
 
   def perform(product_id)
-    collection_name = "product_#{product_id}"
+    python_url = ENV.fetch("PYTHON_API_URL")
+    api_key    = ENV.fetch("SERVICE_API_KEY")
 
-    qdrant_url = ENV.fetch("QDRANT_URL")
-    api_key    = ENV["QDRANT_API_KEY"]
-
-    uri = URI.parse("#{qdrant_url}/collections/#{collection_name}")
+    uri = URI.parse("#{python_url}/collection/#{product_id}")
 
     http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = uri.scheme == "https"
+    http.use_ssl      = uri.scheme == "https"
     http.open_timeout = 10
-    http.read_timeout = 10
+    http.read_timeout = 15
 
-    request = Net::HTTP::Delete.new(uri.request_uri)
-
-    request["api-key"] = api_key if api_key.present?
+    request = Net::HTTP::Delete.new(uri.request_uri, {
+      "x-api-key" => api_key
+    })
 
     response = http.request(request)
+    code     = response.code.to_i
 
-    unless response.code.to_i == 200
-      raise "Qdrant deletion failed: #{response.body}"
+    if code == 200
+      Rails.logger.info "[DeleteCollectionJob] Successfully deleted Qdrant collection for product #{product_id}"
+    else
+      Rails.logger.error "[DeleteCollectionJob] Python service returned #{code} for product #{product_id}: #{response.body}"
+      raise "Collection deletion failed with status #{code}"
     end
 
-    Rails.logger.info "✅ Deleted Qdrant collection #{collection_name}"
+  rescue Net::OpenTimeout, Net::ReadTimeout => e
+    Rails.logger.error "[DeleteCollectionJob] Timeout deleting collection for product #{product_id}: #{e.message}"
+    raise
+  rescue StandardError => e
+    Rails.logger.error "[DeleteCollectionJob] Error deleting collection for product #{product_id}: #{e.message}"
+    raise
   end
 end

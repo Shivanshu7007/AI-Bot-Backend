@@ -72,6 +72,7 @@ gem 'rqrcode'
 gem 'rqrcode_png'
 gem 'docx'
 gem "rack-cors"
+gem "rack-attack"
 gem "cloudinary"
 gem "image_processing"
 gem "ruby-vips"

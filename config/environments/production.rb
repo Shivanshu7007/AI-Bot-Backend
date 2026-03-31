@@ -14,12 +14,19 @@ Rails.application.configure do
 
   config.active_support.report_deprecations = false
 
-  # ActiveStorage
+  # ActiveStorage — use :local for single-instance; switch to :amazon/:cloudinary for multi-instance
   config.active_storage.service = :local
 
-  # Cache + Jobs
-  config.cache_store = :memory_store
-  config.active_job.queue_adapter = :inline
+  # Cache — use Redis if available, fall back to null_store
+  redis_url = ENV["REDIS_URL"]
+  if redis_url.present?
+    config.cache_store = :redis_cache_store, { url: redis_url, expires_in: 1.hour }
+  else
+    config.cache_store = :null_store
+  end
+
+  # Jobs — use Sidekiq for async processing
+  config.active_job.queue_adapter = :sidekiq
 
   # Disable ActionCable mount
   config.action_cable.mount_path = nil
@@ -28,6 +35,10 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
   config.active_record.attributes_for_inspect = [:id]
 
-  # 🔥 Allow ALL Render hosts
-  config.hosts.clear
+  # Allowed hosts — add your Render domain via RAILS_HOST env var
+  # e.g. RAILS_HOST=your-app.onrender.com
+  config.hosts << /.*\.onrender\.com/
+  config.hosts << ENV["RAILS_HOST"] if ENV["RAILS_HOST"].present?
+  # Health check path is always allowed (for load balancer probes)
+  config.host_authorization = { exclude: ->(req) { req.path == "/up" } }
 end

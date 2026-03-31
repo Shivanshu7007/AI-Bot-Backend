@@ -84,14 +84,14 @@ Rails.application.configure do
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    :address              => "smtp.gmail.com",
-    :port                 => 587,
-    :domain               => "gmail.com",
-    :user_name            => 'shivanshu.mishra.work@gmail.com',
-    :password             => 'nkhk ogcn dxcb pksx',
-    :authentication       => "plain",
-    :enable_starttls_auto => true,
-    :openssl_verify_mode  =>  'none'   
+    address:              "smtp.gmail.com",
+    port:                 587,
+    domain:               "gmail.com",
+    user_name:            ENV.fetch("SMTP_USERNAME", ""),
+    password:             ENV.fetch("SMTP_PASSWORD", ""),
+    authentication:       "plain",
+    enable_starttls_auto: true,
+    openssl_verify_mode:  "none"
   }
   config.action_mailer.perform_deliveries = true
 end

@@ -2,14 +2,14 @@ class Api::ProductsController < ApplicationController
   include Rails.application.routes.url_helpers
 
   def index
-    products = Product.all
+    products = Product.order(:id)
 
     render json: products.map { |p|
       {
-        id: p.id,
-        name: p.name,
+        id:          p.id,
+        name:        p.name,
         description: p.description,
-        image_url: p.image.attached? ? url_for(p.image) : nil
+        image_url:   p.image.attached? ? url_for(p.image) : nil
       }
     }
   end
