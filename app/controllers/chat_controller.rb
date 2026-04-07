@@ -46,7 +46,17 @@ class ChatController < ApplicationController
       return render json: { reply: "Chat failed. Please try again." }
     end
 
-    render json: { reply: response.body.to_s.strip }
+    body = response.body.to_s.strip
+    begin
+      parsed = JSON.parse(body)
+      if parsed["status"] == "no_knowledge_base"
+        return render json: { status: "no_knowledge_base" }
+      end
+    rescue JSON::ParserError
+      # Not JSON — plain text reply, fall through
+    end
+
+    render json: { reply: body }
 
   rescue Net::OpenTimeout, Net::ReadTimeout => e
     Rails.logger.error "[ChatController] Timeout for product=#{pid}: #{e.message}"
