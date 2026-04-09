@@ -353,6 +353,8 @@ GEM
     rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
+    redis (5.4.1)
+      redis-client (>= 0.22.0)
     redis-client (0.26.4)
       connection_pool
     regexp_parser (2.11.3)
@@ -516,6 +518,7 @@ DEPENDENCIES
   rack-attack
   rack-cors
   rails (~> 8.0.3)
+  redis (>= 4.0.1)
   rqrcode
   rqrcode_png
   rubocop-rails-omakase
