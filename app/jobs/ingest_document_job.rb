@@ -60,7 +60,14 @@ class IngestDocumentJob < ApplicationJob
 
     when filename.end_with?(".docx")
       doc = Docx::Document.open(StringIO.new(raw))
-      doc.paragraphs.map(&:text).join("\n")
+      parts = doc.paragraphs.map(&:text)
+      doc.tables.each do |table|
+        table.rows.each do |row|
+          row_text = row.cells.map(&:text).reject(&:blank?).join(" | ")
+          parts << row_text unless row_text.blank?
+        end
+      end
+      parts.reject(&:blank?).join("\n")
 
     when filename.end_with?(".txt")
       raw.force_encoding("UTF-8")

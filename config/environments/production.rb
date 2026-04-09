@@ -14,8 +14,8 @@ Rails.application.configure do
 
   config.active_support.report_deprecations = false
 
-  # ActiveStorage — use :local for single-instance; switch to :amazon/:cloudinary for multi-instance
-  config.active_storage.service = :local
+  # ActiveStorage — documents and images are stored on Cloudinary (configured in storage.yml)
+  config.active_storage.service = :cloudinary
 
   # Cache — use Redis if available, fall back to null_store
   redis_url = ENV["REDIS_URL"]

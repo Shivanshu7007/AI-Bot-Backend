@@ -3,7 +3,6 @@ require "uri"
 
 class ChatController < ApplicationController
   skip_before_action :verify_authenticity_token
-  protect_from_forgery with: :null_session
 
   MAX_QUESTION_LENGTH = 1000
 
@@ -37,7 +36,8 @@ class ChatController < ApplicationController
       "x-api-key"    => ENV.fetch("SERVICE_API_KEY")
     })
 
-    request.body = { product_id: pid, question: question.strip }.to_json
+    history = params[:history] || []
+    request.body = { product_id: pid, question: question.strip, history: history }.to_json
 
     response = http.request(request)
 

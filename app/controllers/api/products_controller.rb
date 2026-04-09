@@ -2,7 +2,7 @@ class Api::ProductsController < ApplicationController
   include Rails.application.routes.url_helpers
 
   def index
-    products = Product.order(:id)
+    products = Product.order(:id).limit(50)
 
     render json: products.map { |p|
       {
