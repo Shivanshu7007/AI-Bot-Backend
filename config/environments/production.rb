@@ -8,7 +8,9 @@ Rails.application.configure do
   config.public_file_server.enabled = false
 
   config.log_tags = [:request_id]
-  config.logger = ActiveSupport::TaggedLogging.logger(STDOUT)
+  logger = ActiveSupport::Logger.new(STDOUT)
+  logger.formatter = config.log_formatter
+  config.logger = ActiveSupport::TaggedLogging.new(logger)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
   config.silence_healthcheck_path = "/up"
 
@@ -39,6 +41,4 @@ Rails.application.configure do
   # e.g. RAILS_HOST=your-app.onrender.com
   config.hosts << /.*\.onrender\.com/
   config.hosts << ENV["RAILS_HOST"] if ENV["RAILS_HOST"].present?
-  # Health check path is always allowed (for load balancer probes)
-  config.host_authorization = { exclude: ->(req) { req.path == "/up" } }
 end
