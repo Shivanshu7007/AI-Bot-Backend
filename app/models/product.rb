@@ -12,12 +12,20 @@ class Product < ApplicationRecord
     return unless documents.attached?
 
     documents.each do |doc|
-      IngestDocumentJob.perform_later(self.id, doc.blob.id)
+      if ENV["JOBS_IN_WEB"] == "true"
+        IngestDocumentJob.perform_now(id, doc.blob.id)
+      else
+        IngestDocumentJob.perform_later(id, doc.blob.id)
+      end
     end
   end
 
   def enqueue_collection_deletion
-    DeleteCollectionJob.perform_later(self.id)
+    if ENV["JOBS_IN_WEB"] == "true"
+      DeleteCollectionJob.perform_now(id)
+    else
+      DeleteCollectionJob.perform_later(id)
+    end
   end
 
   def self.ransackable_attributes(_auth_object = nil)
