@@ -21,7 +21,11 @@ Rails.application.configure do
   # Cache — use Redis if available, fall back to null_store
   redis_url = ENV["REDIS_URL"]
   if redis_url.present?
-    config.cache_store = :redis_cache_store, { url: redis_url, expires_in: 1.hour }
+    config.cache_store = :redis_cache_store, {
+      url: redis_url,
+      expires_in: 1.hour,
+      pool: false
+    }
   else
     config.cache_store = :null_store
   end
