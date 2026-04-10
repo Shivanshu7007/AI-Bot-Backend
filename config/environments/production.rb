@@ -12,7 +12,6 @@ Rails.application.configure do
   logger.formatter = config.log_formatter
   config.logger = ActiveSupport::TaggedLogging.new(logger)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
-  config.silence_healthcheck_path = "/up"
 
   config.active_support.report_deprecations = false
 
@@ -35,7 +34,6 @@ Rails.application.configure do
 
   config.i18n.fallbacks = true
   config.active_record.dump_schema_after_migration = false
-  config.active_record.attributes_for_inspect = [:id]
 
   # Allowed hosts — add your Render domain via RAILS_HOST env var
   # e.g. RAILS_HOST=your-app.onrender.com
