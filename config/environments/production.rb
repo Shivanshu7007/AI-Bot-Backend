@@ -30,8 +30,10 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
-  # Jobs — use Sidekiq for async processing
-  config.active_job.queue_adapter = :sidekiq
+  # Jobs — default to Sidekiq, but allow a single-service deployment mode
+  # where jobs run inside the web process.
+  config.active_job.queue_adapter =
+    ENV["JOBS_IN_WEB"] == "true" ? :async : :sidekiq
 
   # Disable ActionCable mount
   config.action_cable.mount_path = nil
